@@ -1,0 +1,76 @@
++-------------------------------------------------------------------------+
++----------------------------Bojack_OpenStack-----------------------------+
++--------------------OpenStack on Ubuntu Server 16.04---------------------+
++-------------------------------------------------------------------------+
+
++---------Remove Netplan from UBUNTU SERVER 18.04 completely---------+
+sudo apt-get purge cloud-init
+sudo rm -rf /etc/netplan/50-cloud-init.yaml
+sudo nano /etc/cloud/cloud.cfg.d/99-disable-network-config.cfg
+	-> network: {config: disabled}
+sudo apt install ifupdown
+
++---------Install OpenStack---------+
+sudo useradd -s /bin/bash -d /opt/stack -m stack
+echo "stack ALL=(ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/stack
+sudo su - stack
+git clone https://git.openstack.org/openstack-dev/devstack
+cd devstack
+sudo nano local.conf 
+
++---------What to insert in local.conf---------+
+
+[[local|localrc]]
+ADMIN_PASSWORD=pamestaliontaria1!
+DATABASE_PASSWORD=$ADMIN_PASSWORD
+RABBIT_PASSWORD=$ADMIN_PASSWORD
+SERVICE_PASSWORD=$ADMIN_PASSWORD
+HOST_IP=10.0.100.241
+
+#Logging Config
+LOGFILE=$DEST/logs/stack.sh.log
+LOGDAYS=2
+LOG_COLOR=True
+
+#Swift Config
+SWIFT_HASH=66a3d6b56c1f479c8b4e70ab5c2000f5
+SWIFT_REPLICAS=1
+SWIFT_DATA_DIR=$DEST/data
+
+#Network Config
+Q_ASSIGN_GATEWAY_TO_PUBLIC_BRIDGE=False
+Q_USE_SECGROUP=True
+FLOATING_RANGE=10.0.100.0/24
+IPV4_ADDRS_SAFE_TO_USE=10.0.0.0/22
+Q_FLOATING_ALLOCATION_POOL="start=10.0.100.242,end=10.0.100.245"
+PUBLIC_NETWORK_GATEWAY=10.0.100.1
+PUBLIC_INTERFACE=ens192
+
++---------Configure the bridge---------+
+sudo nano /etc/network/interfaces
+
+# The loopback network interface
+auto lo
+iface lo inet loopback
+#Ethernet Config
+auto ens192
+iface ens192 inet manual
+        up ip address add 0/0 dev $IFACE
+        up ip link set $IFACE up
+        up ifconfig $IFACE promisc
+        up ifconfig $IFACE multicast
+        down ip link set $IFACE down
+#Bridge Config 
+auto br-ex
+iface br-ex inet static
+        address 10.0.100.241
+        netmask 255.255.255.0
+        network 10.0.100.0
+        gateway 10.0.100.1
+        up ifconfig $IFACE promisc
+        dns-nameservers 10.0.100.1 8.8.8.8
+
++---------Final words---------+
+sudo reboot now
+
+sudo /etc/init.d/networking restart
