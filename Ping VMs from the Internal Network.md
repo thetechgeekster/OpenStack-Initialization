@@ -7,7 +7,7 @@ from your Windows PC with Route commands<br>
 <h3>In OpenStack(Ubuntu):<br><h3>
 <p>
 	ex. $user@10.0.3.56:~ sudo route add -net 10.165.12.0/24 gw 10.65.195.29<br>
-	sud route add -net [internal_vm_ip] gw [external_op_id]<br>
+	sudo route add -net [internal_vm_ip] gw [external_op_id]<br>
 </p>
 <br>
 <h3>In Windows:<br><h3>
