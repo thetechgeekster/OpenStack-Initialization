@@ -10,6 +10,21 @@ sudo nano /etc/cloud/cloud.cfg.d/99-disable-network-config.cfg
 	-> network: {config: disabled}
 sudo apt install ifupdown
 
++---------Configure the network---------+
+sudo nano /etc/network/interfaces
+
+# The loopback network interface
+auto lo
+iface lo inet loopback
+#Ethernet Config
+auto ens160
+iface ens160 inet static
+        address 10.0.100.241
+        netmask 255.255.255.0
+        network 10.0.100.0
+        gateway 10.0.100.1
+        dns-nameservers 10.0.100.1 8.8.8.8
+
 +---------Install OpenStack---------+
 sudo useradd -s /bin/bash -d /opt/stack -m stack
 echo "stack ALL=(ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/stack
@@ -44,7 +59,7 @@ FLOATING_RANGE=10.0.100.0/24
 IPV4_ADDRS_SAFE_TO_USE=10.0.0.0/22
 Q_FLOATING_ALLOCATION_POOL="start=10.0.100.242,end=10.0.100.245"
 PUBLIC_NETWORK_GATEWAY=10.0.100.1
-PUBLIC_INTERFACE=ens192
+PUBLIC_INTERFACE=ens160
 
 +---------Configure the bridge---------+
 sudo nano /etc/network/interfaces
@@ -53,8 +68,8 @@ sudo nano /etc/network/interfaces
 auto lo
 iface lo inet loopback
 #Ethernet Config
-auto ens192
-iface ens192 inet manual
+auto ens160
+iface ens160 inet manual
         up ip address add 0/0 dev $IFACE
         up ip link set $IFACE up
         up ifconfig $IFACE promisc
