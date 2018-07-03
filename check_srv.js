@@ -3,6 +3,21 @@
 // memory (ram)
 const os = require('os');
 
+var cors = require('cors');
+var express = require('express');
+
+
+var app = express();
+
+app.use(cors());
+
+app.use(function(req, res, next) {
+   res.header("Access-Control-Allow-Origin", "*");
+   res.header('Access-Control-Allow-Methods', 'DELETE, PUT, GET, POST');
+   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+   next();
+});
+
 const SERVER_PORT = 4000;
 
 function get_system_info(){
@@ -15,7 +30,7 @@ function get_system_info(){
     const ram_in_mbytes = ram_in_kbytes / 1024;
     const ram_in_gbytes = ram_in_mbytes / 1024;
     const cpu = cpus[0];
-    const num_of_cpus = cpus.length;
+    const num_of_cpus = cpus.length + ' Cores';
     return {
         arch,
         platform,
@@ -41,6 +56,6 @@ server.listen(SERVER_PORT,(error)=>{
     if(error){
         console.log('Failed to start server',error);
     }else{
-        console.log('You did it .Access server on localhost:'+SERVER_PORT);
+        console.log('You did it. Access server on localhost:'+SERVER_PORT);
     }
 })
