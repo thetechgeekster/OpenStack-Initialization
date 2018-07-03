@@ -36,7 +36,7 @@ sudo nano local.conf
 +---------What to insert in local.conf---------+
 
 [[local|localrc]]
-ADMIN_PASSWORD=pamestaliontaria1!
+ADMIN_PASSWORD=---
 DATABASE_PASSWORD=$ADMIN_PASSWORD
 RABBIT_PASSWORD=$ADMIN_PASSWORD
 SERVICE_PASSWORD=$ADMIN_PASSWORD
